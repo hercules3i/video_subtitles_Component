@@ -9,3 +9,7 @@ deep-translator
 python-dotenv
 uvicorn[standard]
 motor
+gunicorn
+uvicorn
+moviepy
+requests

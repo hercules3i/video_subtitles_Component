@@ -1,56 +1,60 @@
-import aiohttp
-import asyncio
-import json
-import os
-class MainClass:
-    async def __init__(self,data):
-        self.data = data
-    async def post_check(self):
-        await self.post_to_drive()
-    async def post_to_drive(download_data):
-        url = 'https://os.3i.com.vn/MobileLogin/InsertObjectFileSubject'
-        file_path = os.path.abspath(filename)
-        asyncio.run(self.upload_file_async(url, file_path))
+import requests
 
-    async def post_to_drive(self):
-        async with aiohttp.ClientSession() as session:
-            data = {
-                'video_link_original': self.data["video_link_original"],
-                'video_link_edited': self.data["video_link_edited"],
-                'video_content': self.data["video_content"],
-            }
-            url = 'https://admin.metalearn.vn/VideoBilingualEditor/InsertVideo'
-            async with session.post(url, data=data) as response:
-                if response.status == 200:
-                    try:
-                        response_text = await response.text()
-                        print("Response text:", response_text)
-
-                        # Parse the response as JSON
-                        json_response = await response.json()
-
-                        # Debug print the entire JSON response
-                        print("Full JSON response:", json_response)
-
-                        # Extract 'object' and 'title' fields if they exist
-                        object_field = json_response.get('object')
-                        title_field = json_response.get('title')
-
-                        print(f"Object: {object_field}")
-                        print(f"Title: {title_field}")
-
-                        # Trigger the custom event
-                    except json.JSONDecodeError as e:
-                        print(f"Error decoding JSON: {e}")
-                else:
-                    print(f"File upload failed: {response.reason}")
-
-    def send_custom_event(self, language, event_name, message):
-        # Implement your custom event logic here
-        print(f"Event triggered: {event_name} with message: {message} for language: {language}")
-
-# Example usage:
-if __name__ == '__main__':
-    main_class = MainClass()
+class VideoEditor:
+    def __init__(self,video_code,video_title, original_video, edited_video):
+        self.video_code = video_code,
+        self.video_title = video_title,
+        self.original_video = original_video
+        self.edited_video = edited_video
+        
+        self.video_content = {}
     
-    asyncio.run(main_class.post_check(url, language))
+    def save_video_content(self,timeLine,original_language,translated_language):
+        time_line = {}
+        time_line[timeLine] = {
+                "en": original_language,
+                "vi": translated_language
+        }
+        result = {
+            "VideoContent": {
+                "timeLine": time_line
+            }
+        }
+        self.video_content = result
+        return result
+
+    def save(self):
+        return {
+            "VideoCode": self.video_code ,
+            "VideoTitle":self.video_title ,
+            "OriginVideoLink":self.original_video,
+            "ResultVideoPath":self.edited_video,
+            "VideoContent":self.video_content,
+            "IsPublic":True,
+            "username":"Thai"
+        }
+
+import json
+
+# Khởi tạo đối tượng VideoEditor
+video_editor = VideoEditor(
+    video_code="VID123",
+    video_title="Microsoft 365 Copilot Announcement",
+    original_video="https://example.com/original_video.mp4",
+    edited_video="https://example.com/edited_video.mp4"
+)
+
+# Lưu nội dung video
+timeLine = "00:00:00,000 --> 00:00:06,800"
+original_language = "Today, we are announcing Wave 2 of Microsoft 365 Copilot."
+translated_language = "Hôm nay, chúng tôi công bố đợt 2 của Microsoft 365 Copilot."
+video_editor.save_video_content(timeLine, original_language, translated_language)
+
+# Lưu toàn bộ thông tin của video
+video_data = video_editor.save()
+
+# Lưu dữ liệu vào tệp JSON
+with open('save.json', 'w', encoding='utf-8') as json_file:
+    json.dump(video_data, json_file, ensure_ascii=False, indent=4)
+
+print("Dữ liệu đã được lưu vào file save.json")
