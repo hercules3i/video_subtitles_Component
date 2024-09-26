@@ -31,7 +31,6 @@ async def send_download(url: str, dest: str):
     
     print ("message Subtitle task added to the queue")
     return {"result":result}
-    return {"message":"Video add sucess"}
 
 # @app.post("/download/")
 # async def download_video_via_url(item: Item):
