@@ -1,5 +1,5 @@
 import os
 import requests
 
-URL = f"http://localhost:8000/generate/W10RXr9c44Y?dest=en" # en, ja, ko, zh
+URL = f"http://127.0.0.1:8002/send_post/?url=https://www.youtube.com/watch?v=W10RXr9c44Y&dest=ko" # en, ja, ko, zh
 response = requests.post(URL)

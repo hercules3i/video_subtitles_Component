@@ -65,7 +65,7 @@ from pytube. innertube import _default_clients
 from pytube import cipher
 from src.constant import VIDEOS_PATH
 from src.utils.utils import extract_audio, transcribe, generate_subtitle_file, add_subtitle_to_video, get_throttling_function_name
-
+import requests
 
 # config
 _default_clients["ANDROID"]["context"]["client"]["clientVersion"] = "19.08.35"
@@ -78,11 +78,13 @@ _default_clients["ANDROID_MUSIC"] = _default_clients["ANDROID_CREATOR"]
 cipher.get_throttling_function_name = get_throttling_function_name
 
 
-def download_video(url):
+def download_video(url,dest):
     yt = pytube.YouTube(url)
     yt_id = yt.video_id
     yt.streams.filter(progressive=True, file_extension='mp4').order_by(
         'resolution').desc().first().download(output_path=VIDEOS_PATH, filename=yt_id)
+    URL = f"http://localhost:8002/generate/{yt_id}?dest={dest}" # en, ja, ko, zh
+    response = requests.post(URL)
     return {"title": yt.title, "id": yt_id, "status": "completed"}
 
 
@@ -121,5 +123,5 @@ def generate_subtitle_file_task(language, segments_data, yt_id):
 
 def add_subtitle_to_video_task(subtitle_file, language, yt_id):
   
-    add_subtitle_to_video(yt_id, subtitle_file, language)
-    return f"Subtitle for {yt_id} added"
+    file_path = add_subtitle_to_video(yt_id, subtitle_file, language)
+    return file_path
