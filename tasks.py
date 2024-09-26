@@ -83,8 +83,9 @@ def download_video(url,dest):
     yt_id = yt.video_id
     yt.streams.filter(progressive=True, file_extension='mp4').order_by(
         'resolution').desc().first().download(output_path=VIDEOS_PATH, filename=yt_id)
-    URL = f"http://localhost:8002/generate/{yt_id}?dest={dest}" # en, ja, ko, zh
-    response = requests.post(URL)
+    # URL = f"http://localhost:8002/generate/{yt_id}?dest={dest}" # en, ja, ko, zh
+    # response = requests.post(URL)
+    # print("generate:",response)
     return {"title": yt.title, "id": yt_id, "status": "completed"}
 
 

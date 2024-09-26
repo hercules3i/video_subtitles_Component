@@ -22,8 +22,15 @@ app = FastAPI()
 async def send_download(url: str, dest: str):
     
 
-    download_video(url,dest)
-
+    download_response = download_video(url,dest)
+    yt_id = download_response["id"]
+    audio_extract, yt_id = extract_audio_task(yt_id)
+    language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
+    subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
+    result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
+    
+    print ("message Subtitle task added to the queue")
+    return {"result":result}
     return {"message":"Video add sucess"}
 
 # @app.post("/download/")
@@ -43,7 +50,7 @@ async def generate_subtitle(yt_id: str, dest: str):
     result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
     
     print ("message Subtitle task added to the queue")
-    return {"message": "Subtitle task added to the queue","file_path":result}
+    return result
 
 
 @app.get("/task-status/{task_id}")
