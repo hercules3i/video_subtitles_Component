@@ -174,7 +174,6 @@ from src.models.models import Item
 from src.utils.utils import *
 from src.constant import *
 from tasks import download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
-from config import Config
 
 
 from src.constant import VIDEOS_PATH
@@ -215,4 +214,4 @@ async def task_status(task_id: str):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port=Config.FASTAPI_PORT, host=Config.HOST)
+    uvicorn.run("main:app", port=8000)

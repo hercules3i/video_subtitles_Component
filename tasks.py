@@ -65,7 +65,6 @@ from pytube. innertube import _default_clients
 from pytube import cipher
 from src.constant import VIDEOS_PATH
 from src.utils.utils import extract_audio, transcribe, generate_subtitle_file, add_subtitle_to_video, get_throttling_function_name
-from celery_app import app
 
 
 # config
