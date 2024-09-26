@@ -1,47 +1,52 @@
-from flask import Flask
-import concurrent.futures
-import time
-app = Flask(__name__)
 
-import concurrent.futures
-import time
-def add_two(number):
-    """Cộng 2 vào số đã cho."""
-    return number + 2
 
-def subtract_two(number):
-    """Trừ 2 từ số đã cho."""
-    return number - 2
 
-def multiply_by_two(number):
-    """Nhân số đã cho với 2."""
-    return number * 2
+import os
+import uvicorn
+from fastapi import FastAPI
+from celery.result import AsyncResult
+from src.models.models import Item
+from src.utils.utils import *
+from src.constant import *
+from tasks import download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
 
-def divide_by_two(number):
-    """Chia số đã cho cho 2."""
-    if number == 0:
-        return "Cannot divide by zero"
-    return number / 2
-def task(n):
-    
-    print(add_two(n))
-    print(subtract_two(n))
-    print(multiply_by_two(n))
-    print(divide_by_two(n))
-    
-    return f"Task {n} complete"
 
-# Danh sách thời gian ngủ cho các task
-durations = [3]
+from src.constant import VIDEOS_PATH
 
-# Tạo một danh sách chứa các Future
-listThreads = []
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-    for duration in durations:
-        future = executor.submit(task, duration)
-        listThreads.append(future)
-    print(listThreads)
-    # Xử lý kết quả ngay khi chúng hoàn thành
-    for future in concurrent.futures.as_completed(listThreads):
-        print(future.result())  # In ra kết quả
+# Create necessary directories
+os.makedirs(AUDIOS_PATH, exist_ok=True)
+os.makedirs(VIDEOS_PATH, exist_ok=True)
+os.makedirs(SUBTITLES, exist_ok=True)
+os.makedirs(OUTPUT, exist_ok=True)
+
+app = FastAPI()
+
+@app.post("/download/")
+async def download_video_via_url(item: Item):
+    # Đẩy tác vụ tải video vào hàng đợi Celery
+    download_video(item.url)
+    return {"message": "Video download task added to the queue"}
+
+
+@app.post("/generate/{yt_id}")
+async def generate_subtitle(yt_id: str, dest: str):
+
+    audio_extract, yt_id = extract_audio_task(yt_id)
+    language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
+    subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
+    result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
+ 
+    print ("message Subtitle task added to the queue")
+    return {"message": "Subtitle task added to the queue"}
+
+
+@app.get("/task-status/{task_id}")
+async def task_status(task_id: str):
+    # Kiểm tra trạng thái tác vụ
+    task_result = AsyncResult(task_id)
+    return {"status": task_result.status, "result": task_result.result}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", port=8000)

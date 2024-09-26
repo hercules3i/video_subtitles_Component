@@ -3,11 +3,17 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 import os
 import concurrent.futures
 
-def threadTrim(path_original_vid, video_name,countVid,start: int, end: int):
-    pathVid = f"media/short_clip/short-{video_name}-{countVid}.mp4"
-    ffmpeg_extract_subclip(path_original_vid,start,end,targetname=pathVid)
+def threadTrim(path_original_vid, video_name, countVid, start: int, end: int):
+        new_directory = f"media/short_clip/{video_name}"
+        os.makedirs(new_directory, exist_ok=True)
 
-    return pathVid
+        # Đường dẫn lưu clip
+        pathVid = f"{new_directory}/short-{video_name}-{countVid}.mp4"
+        
+        # Cắt đoạn video
+        ffmpeg_extract_subclip(path_original_vid, start, end, targetname=pathVid)
+        
+        return pathVid
 
 def trimVideo(video_name: str):
     try:

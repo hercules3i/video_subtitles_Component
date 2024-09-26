@@ -46,7 +46,8 @@ def list_files_in_directory(directory_path):
 @app.post("/generate/{yt_id}")
 async def generate_subtitle(yt_id: str, dest: str):
     listThreads = []
-    filenames = list_files_in_directory("./media/short_clip")
+    filenames = list_files_in_directory(f"./media/short_clip/{yt_id}/")
+    print(filenames)
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         for video_id in filenames:
             future = executor.submit(generate, video_id,dest)
