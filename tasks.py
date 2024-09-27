@@ -25,12 +25,12 @@ def download_video(url):
     return {"title": yt.title, "id": yt_id, "status": "completed"}
 
 
-def extract_audio_task(yt_id):
-    audio_extract = extract_audio(yt_id)
-    return audio_extract, yt_id
+def extract_audio_task(clip_id,yt_id):
+    audio_extract = extract_audio(clip_id,yt_id)
+    return audio_extract, clip_id
 
 
-def transcribe_task(audio_extract, yt_id, dest):
+def transcribe_task(audio_extract, clip_id, dest,yt_id):
     language, segments,translated_text_list = transcribe(audio_extract, dest)
     serializable_segments = []
     if len(translated_text_list) == 0:
@@ -51,14 +51,14 @@ def transcribe_task(audio_extract, yt_id, dest):
 
    
     
-    return language, serializable_segments, yt_id
+    return language, serializable_segments, clip_id
 
 
 def generate_subtitle_file_task(language, segments_data, yt_id):
     subtitle_file = generate_subtitle_file(yt_id, language, segments_data)
     return subtitle_file, language, yt_id
 
-def add_subtitle_to_video_task(subtitle_file, language, yt_id):
+def add_subtitle_to_video_task(subtitle_file, language, clip_id,yt_id):
   
-    add_subtitle_to_video(yt_id, subtitle_file, language)
-    return f"Subtitle for {yt_id} added"
+    add_subtitle_to_video(clip_id, subtitle_file, language,yt_id)
+    return f"Subtitle for {clip_id} added"

@@ -7,7 +7,7 @@ from urllib.parse import urlparse, parse_qs
 from faster_whisper import WhisperModel
 from deep_translator import GoogleTranslator
 import threading
-
+import os
 from src.constant import *
 
 
@@ -51,10 +51,13 @@ def get_throttling_function_name(js: str) -> str:
     )
 
 
-def extract_audio(yt_id: str):
-    extracted_audio = f"{AUDIOS_PATH}audio-{yt_id}.wav"
-    print("56-extract_audio",f"{SHORTS_PATH}{yt_id}")
-    stream = ffmpeg.input(f"{SHORTS_PATH}/k0wUQDT5RRo/{yt_id}")
+def extract_audio(clip_id,video_id: str):
+    audios_path = f"media/audios/{video_id}"
+    if not os.path.exists(audios_path):
+        os.makedirs(audios_path)
+    extracted_audio = f"{AUDIOS_PATH}{video_id}/audio-{clip_id}.wav"
+    print("56-extract_audio",f"{SHORTS_PATH}/{video_id}/{clip_id}")
+    stream = ffmpeg.input(f"{SHORTS_PATH}/{video_id}/{clip_id}")
 
     stream = ffmpeg.output(stream, extracted_audio)
     try:
@@ -132,10 +135,13 @@ def generate_subtitle_file(yt_id: str, language, segments):
     return subtitle_file
 
 
-def add_subtitle_to_video(yt_id: str, subtitle_file, subtitle_language):
-    video_input_stream = ffmpeg.input(f"{SHORTS_PATH}{yt_id}")
+def add_subtitle_to_video(clip_id: str, subtitle_file, subtitle_language,yt_id):
+    outputs_path = f"media/outputs/{yt_id}"
+    if not os.path.exists(outputs_path):
+        os.makedirs(outputs_path)
+    video_input_stream = ffmpeg.input(f"{SHORTS_PATH}{yt_id}/{clip_id}")
     # subtitle_input_stream = ffmpeg.input(subtitle_file)
-    output_video = f"{OUTPUT}output-{yt_id}-{subtitle_language}.mp4"
+    output_video = f"{OUTPUT}{yt_id}/output-{clip_id}-{subtitle_language}.mp4"
     # subtitle_track_tile = subtitle_file.replace(".srt", "")
     stream = ffmpeg.output(video_input_stream, output_video,
                            vf=f"subtitles={subtitle_file}")

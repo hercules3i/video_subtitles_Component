@@ -30,12 +30,12 @@ async def download_video_via_url(item: Item):
     trimVideo(result["id"])
     return {"message": "Video download task added to the queue"}
 
-def generate(yt_id,dest):
-    audio_extract, yt_id = extract_audio_task(yt_id)
-    language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
-    subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
-    result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
-    return f"{yt_id} edited!!!!!"
+def generate(clip_id,dest,yt_id):
+    audio_extract, clip_id = extract_audio_task(clip_id,yt_id)
+    language, serializable_segments, clip_id = transcribe_task(audio_extract, clip_id,dest,yt_id)
+    subtitle_file, language, clip_id = generate_subtitle_file_task(language, serializable_segments, clip_id)
+    result = add_subtitle_to_video_task(subtitle_file, dest, clip_id,yt_id)
+    return f"{clip_id} edited!!!!!"
 def list_files_in_directory(directory_path):
     try:
         # Lấy danh sách tên file trong thư mục
@@ -50,7 +50,7 @@ async def generate_subtitle(yt_id: str, dest: str):
     print(filenames)
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         for video_id in filenames:
-            future = executor.submit(generate, video_id,dest)
+            future = executor.submit(generate, video_id,dest,yt_id)
             listThreads.append(future)
         print(listThreads)
         # Xử lý kết quả ngay khi chúng hoàn thành
