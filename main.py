@@ -20,18 +20,14 @@ app = FastAPI()
 
 @app.post("/send_post/")
 async def send_download(url: str, dest: str):
-    
-
     download_response = download_video(url,dest)
     yt_id = download_response["id"]
     audio_extract, yt_id = extract_audio_task(yt_id)
     language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
     subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
     result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
-    
     print ("message Subtitle task added to the queue")
     return {"result":result}
-
 # @app.post("/download/")
 # async def download_video_via_url(item: Item):
 #     # Đẩy tác vụ tải video vào hàng đợi Celery
@@ -42,7 +38,6 @@ async def send_download(url: str, dest: str):
 
 @app.post("/generate/{yt_id}")
 async def generate_subtitle(yt_id: str, dest: str):
-
     audio_extract, yt_id = extract_audio_task(yt_id)
     language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
     subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
