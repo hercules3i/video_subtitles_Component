@@ -6,6 +6,7 @@ from src.utils.utils import *
 from src.constant import *
 from tasks import download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
 import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.constant import VIDEOS_PATH
 
@@ -17,7 +18,13 @@ os.makedirs(SUBTITLES, exist_ok=True)
 os.makedirs(OUTPUT, exist_ok=True)
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for testing
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, OPTIONS, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 @app.post("/send_post/")
 async def send_download(url: str, dest: str):
     download_response = download_video(url,dest)
