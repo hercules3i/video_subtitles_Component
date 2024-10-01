@@ -114,7 +114,7 @@ def format_time_for_srt(seconds):
 
 
 def generate_subtitle_file(yt_id: str, language, segments):
-    subtitle_file = f"{SUBTITLES}sub-{yt_id}.{language}.srt"
+    subtitle_file = f"{SUBTITLES}/{yt_id}/sub-{yt_id}.{language}.srt"
     text = ""
     for index, segment in enumerate(segments):
         segment_start = format_time_for_srt(segment['start'])
