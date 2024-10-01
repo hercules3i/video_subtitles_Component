@@ -93,7 +93,7 @@ def transcribe(audio, dest: str = 'en'):
             print("[%.2fs -> %.2fs] %s" %
                   (segment.start, segment.end, translated_text))
             
-    return language, segments,translated_text_list
+    return language,dest, segments,translated_text_list
 
 
 def format_time_for_srt(seconds):
@@ -107,27 +107,39 @@ def format_time_for_srt(seconds):
 
     return formatted_time
 
-
-def generate_subtitle_file(yt_id: str, language, segments):
+def generate_subtitle_file(yt_id: str, language, video_language, segments):
     subtitle_file = f"{SUBTITLES}sub-{yt_id}.{language}.srt"
     text = ""
+    video_content = {"timeLine": {}}  # Khởi tạo timeLine là một từ điển rỗng
+
     for index, segment in enumerate(segments):
         segment_start = format_time_for_srt(segment['start'])
         segment_end = format_time_for_srt(segment['end'])
 
+        # Cập nhật nội dung file SRT
         text += f"{str(index + 1)}\n"
         text += f"{segment_start} --> {segment_end}\n"
         text += f"{segment['text']}\n"
         try:
             text += f"{segment['translated_text_list'][index]}\n\n"
-        except :
-            print("dont have translated_text_list")
+        except IndexError:
+            print("No translated_text_list available for this segment")
+
+        time_key = f"{segment_start} --> {segment_end}"
+        if time_key not in video_content["timeLine"]:
+            video_content["timeLine"][time_key] = {}
+
+        video_content["timeLine"][time_key][video_language] = segment['text']
+        try:
+            video_content["timeLine"][time_key][language] = segment['translated_text_list'][index]
+        except IndexError:
+            print("No translation available for this segment")
 
 
     with open(subtitle_file, "w", encoding='utf-8') as f:
         f.write(text)
 
-    return subtitle_file
+    return subtitle_file,video_content
 
 
 def add_subtitle_to_video(yt_id: str, subtitle_file, subtitle_language):

@@ -42,12 +42,12 @@ async def send_download(url: str, dest: str):
     download_response = download_video(url,dest)
     yt_id = download_response["id"]
     audio_extract, yt_id = extract_audio_task(yt_id)
-    language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
-    subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
+    language,video_language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
+    subtitle_file, language, yt_id, video_content= generate_subtitle_file_task(language,video_language, serializable_segments, yt_id)
     result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
     print ("message Subtitle task added to the queue")
     remove_directory("media")
-    return {"result":result}
+    return {"result":result,"videoContent":video_content}
 
 # @app.post("/download/")
 # async def download_video_via_url(item: Item):

@@ -39,7 +39,7 @@ def extract_audio_task(yt_id):
 
 
 def transcribe_task(audio_extract, yt_id, dest):
-    language, segments,translated_text_list = transcribe(audio_extract, dest)
+    language,dest, segments,translated_text_list = transcribe(audio_extract, dest)
     serializable_segments = []
     if len(translated_text_list) == 0:
        for segment in segments:
@@ -59,12 +59,12 @@ def transcribe_task(audio_extract, yt_id, dest):
 
    
     
-    return language, serializable_segments, yt_id
+    return language,dest, serializable_segments, yt_id
 
 
-def generate_subtitle_file_task(language, segments_data, yt_id):
-    subtitle_file = generate_subtitle_file(yt_id, language, segments_data)
-    return subtitle_file, language, yt_id
+def generate_subtitle_file_task(language,video_language, segments_data, yt_id):
+    subtitle_file,video_content = generate_subtitle_file(yt_id, language,video_language, segments_data)
+    return subtitle_file, language, yt_id,video_content
 
 def add_subtitle_to_video_task(subtitle_file, language, yt_id):
   
