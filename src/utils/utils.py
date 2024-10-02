@@ -93,7 +93,7 @@ def transcribe(audio, dest: str = 'en'):
             print("[%.2fs -> %.2fs] %s" %
                   (segment.start, segment.end, translated_text))
             
-    return language, segments,translated_text_list
+    return dest, segments,translated_text_list
 
 
 def format_time_for_srt(seconds):
@@ -109,7 +109,7 @@ def format_time_for_srt(seconds):
 
 
 def generate_subtitle_file(yt_id: str, language, segments):
-    subtitle_file = f"{SUBTITLES}sub-{yt_id}.{language}.srt"
+    subtitle_file = f"{SUBTITLES}sub-{yt_id}-{language}.srt"
     text = ""
     for index, segment in enumerate(segments):
         segment_start = format_time_for_srt(segment['start'])
@@ -118,15 +118,13 @@ def generate_subtitle_file(yt_id: str, language, segments):
         text += f"{str(index + 1)}\n"
         text += f"{segment_start} --> {segment_end}\n"
         text += f"{segment['text']}\n"
-        try:
-            text += f"{segment['translated_text_list'][index]}\n\n"
-        except :
-            print("dont have translated_text_list")
+        text += f"{segment['translated_text']}\n"
+
 
 
     with open(subtitle_file, "w", encoding='utf-8') as f:
         f.write(text)
-
+    print(f"write to {subtitle_file}")
     return subtitle_file
 
 

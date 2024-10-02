@@ -49,13 +49,16 @@ def transcribe_task(audio_extract, yt_id, dest):
             'text': segment.text
         })
     else : 
+        index = 0
         for segment in segments:
+            
             serializable_segments.append({
                 'start': segment.start,
                 'end': segment.end,
                 'text': segment.text,
-                'translated_text_list': translated_text_list
+                'translated_text': translated_text_list[index]
             })
+            index += 1
 
    
     
