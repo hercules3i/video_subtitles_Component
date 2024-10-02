@@ -129,9 +129,9 @@ def generate_subtitle_file(yt_id: str, language, video_language, segments):
         if time_key not in video_content["timeLine"]:
             video_content["timeLine"][time_key] = {}
 
-        video_content["timeLine"][time_key][video_language] = segment['text']
+        video_content["timeLine"][time_key][language] = segment['text']
         try:
-            video_content["timeLine"][time_key][language] = segment['translated_text_list'][index]
+            video_content["timeLine"][time_key][video_language] = segment['translated_text_list'][index]
         except IndexError:
             print("No translation available for this segment")
 
