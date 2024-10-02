@@ -11,7 +11,7 @@ import threading
 from post_request2db import post_to_db
 from src.constant import *
 import os
-
+from pytube import YouTube
 def get_throttling_function_name(js: str) -> str:
     """Extract the name of the function that computes the throttling parameter.
 
@@ -143,3 +143,30 @@ def add_subtitle_to_video(yt_id: str, subtitle_file, subtitle_language):
     print("Post to db thanh cong")
     os.remove(output_video)
     return file_path
+
+
+list_resolution = []
+def get_resolution(s):
+    list_resolution.append(s.resolution[:-1])
+
+    return int(s.resolution[:-1])
+
+def get_list_resulotion(file):
+    stream = max(
+    filter(lambda s: get_resolution(s) <= 1080, 
+           filter(lambda s: s.type == 'video', file.fmt_streams)),
+    key=get_resolution 
+    )
+    return list_resolution
+
+
+# Function to remove duplicates while preserving order
+def remove_duplicates(res_list):
+    seen = set()
+    unique_res = []
+    for res in res_list:
+        if res not in seen:
+            unique_res.append(int(res))
+            seen.add(res)
+
+    return unique_res

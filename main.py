@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from src.models.models import Item
 from src.utils.utils import *
 from src.constant import *
-from tasks import redownload_video, download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
+from tasks import handle_get_resolution,redownload_video, download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
@@ -31,10 +31,10 @@ class SubtitleData(BaseModel):
     content: list[dict]  # You can further specify the dict structure if neede
 
 @app.post("/send_post/")
-async def send_download(url: str, dest: str):
+async def send_download(url: str, dest: str, res: int):
    
     try:
-        download_response = download_video(url)
+        download_response = download_video(url,res)
         yt_id = download_response["id"]
         audio_extract, yt_id = extract_audio_task(yt_id)
         language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
@@ -107,7 +107,7 @@ async def generate_subtitle(subtitle_data: SubtitleData):
             print(f"SRT file '{srt_filename}' created successfully.")
             url = add_subtitle_to_video_task(srt_filename, dest, "re-"+download_response["id"])
             os.remove(srt_filename)
-            os.remove(f"{VIDEOS_PATH}re-{download_response["id"]}")
+            os.remove(f"{VIDEOS_PATH}re-{download_response['id']}")
 
             return url
         else:
@@ -122,6 +122,13 @@ def format_time(seconds):
     milliseconds = int((seconds - int(seconds)) * 1000)
     return f"{hours:02}:{minutes:02}:{int(seconds):02},{milliseconds:03}"
 
+@app.post("/get_video_resolutions/")
+async def get_video_resolutions(url: str):
+    try:
+        list_resolutions,time_length = handle_get_resolution(url)
+        return {"list_resolutions": list_resolutions,"time_length":time_length}
+    except Exception as e:
+        return e
 
 @app.get("/task-status/{task_id}")
 async def task_status(task_id: str):
@@ -130,5 +137,3 @@ async def task_status(task_id: str):
     return {"status": task_result.status, "result": task_result.result}
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", port=8000)

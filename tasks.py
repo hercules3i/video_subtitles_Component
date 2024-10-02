@@ -4,10 +4,10 @@ import pytube
 from pytube. innertube import _default_clients
 from pytube import cipher
 from src.constant import VIDEOS_PATH
-from src.utils.utils import extract_audio, transcribe, generate_subtitle_file, add_subtitle_to_video, get_throttling_function_name
+from src.utils.utils import get_list_resulotion,remove_duplicates,get_resolution,extract_audio, transcribe, generate_subtitle_file, add_subtitle_to_video, get_throttling_function_name
 import requests
 import urllib.request
-
+from pytube import YouTube
 # config
 _default_clients["ANDROID"]["context"]["client"]["clientVersion"] = "19.08.35"
 _default_clients["IOS"]["context"]["client"]["clientVersion"] = "19.08.35"
@@ -21,7 +21,21 @@ cipher.get_throttling_function_name = get_throttling_function_name
 import urllib.request
 import pytube
 
-def download_video(url):
+def download_video_stream(file, selected_resolution, yt_id):
+    # Tìm luồng video có độ phân giải chính xác với độ phân giải đã chọn
+    stream = next(
+        (s for s in filter(lambda s: s.type == 'video', file.fmt_streams) 
+         if get_resolution(s) == selected_resolution), 
+        None
+    )
+    
+    if stream:
+        stream.download(output_path=VIDEOS_PATH, filename=yt_id)
+        print(f"Đã tải xuống luồng video với độ phân giải {selected_resolution}p.")
+    else:
+        print(f"Không tìm thấy luồng video với độ phân giải {selected_resolution}p.")
+
+def download_video(url, res):
 
     if "youtube.com" not in url:
         id = url.split('/')[-1].split('.')[0]
@@ -29,9 +43,26 @@ def download_video(url):
         return {"title": "Non-YouTube Video", "id": f"{id}", "status": "completed"}
     else:
         yt = pytube.YouTube(url)
+
+        # download_video_stream(yt, res, yt.video_id)
         yt_id = yt.video_id
-        yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
+        stream = next(
+        (s for s in filter(lambda s: s.type == 'video', yt.fmt_streams) 
+         if get_resolution(s) == res), 
+        None
+        )
+        
+        if stream:
+            stream.download(output_path=VIDEOS_PATH, filename=yt_id)
+            print(f"Đã tải xuống luồng video với độ phân giải {res}p.")
+        else:
+            print(f"Không tìm thấy luồng video với độ phân giải {res}p.")
+
+       
+        # yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
         return {"title": yt.title, "id": yt_id, "status": "completed"}
+    
+
 def redownload_video(url):
 
     if "youtube.com" not in url:
@@ -44,6 +75,22 @@ def redownload_video(url):
         yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename="re-"+yt_id)
         return {"title": yt.title, "id": yt_id, "status": "completed"}
     
+def convert_seconds(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    remaining_seconds = seconds % 60
+    return f"{hours}h-{minutes}m-{remaining_seconds}s"
+
+
+def handle_get_resolution(url):
+    file = YouTube(url)
+    duration_seconds = file.length
+    time_length = convert_seconds(duration_seconds)
+    list_resolution = get_list_resulotion(file)
+
+    unique_resolutions_tuple = remove_duplicates(list_resolution)
+    return unique_resolutions_tuple, time_length
+
 def extract_audio_task(yt_id):
     audio_extract = extract_audio(yt_id)
     return audio_extract, yt_id

@@ -1,0 +1,254 @@
+{
+    "VideoCode": "Thai test",
+    "VideoTitle": "Test thai",
+    "OriginVideoLink": "test.com.vn",
+    "ResultVideoPath": "testresult.com.vn",
+    "VideoContent": {
+        "vi": [
+            {
+                "start": 0.0,
+                "end": 3.0,
+                "text": "So everything that makes me whole",
+                "translated_text": "Vì vậy, mọi thứ làm cho tôi trọn vẹn"
+            },
+            {
+                "start": 3.0,
+                "end": 9.0,
+                "text": "今君に捧げよう",
+                "translated_text": "Bây giờ tôi sẽ dành nó cho bạn"
+            },
+            {
+                "start": 11.0,
+                "end": 14.0,
+                "text": "I'm your friend",
+                "translated_text": "Tôi là bạn của bạn"
+            },
+            {
+                "start": 14.0,
+                "end": 17.0,
+                "text": "I'm your friend",
+                "translated_text": "Tôi là bạn của bạn"
+            },
+            {
+                "start": 24.0,
+                "end": 29.0,
+                "text": "ねえ この世界には",
+                "translated_text": "Này, trên thế giới này"
+            },
+            {
+                "start": 29.0,
+                "end": 38.0,
+                "text": "たくさんの 幸せがあるんだね",
+                "translated_text": "Có rất nhiều hạnh phúc"
+            },
+            {
+                "start": 38.0,
+                "end": 45.0,
+                "text": "さあ 二人なら",
+                "translated_text": "Vâng, nếu chỉ có hai chúng ta"
+            },
+            {
+                "start": 46.0,
+                "end": 52.0,
+                "text": "誰かが君のこと 嘘つきと呼んで",
+                "translated_text": "Có người gọi bạn là kẻ nói dối"
+            },
+            {
+                "start": 52.0,
+                "end": 57.0,
+                "text": "心の良い言葉で 傷つけようとして",
+                "translated_text": "Cố làm tổn thương tôi bằng những lời nói tử tế"
+            },
+            {
+                "start": 57.0,
+                "end": 63.0,
+                "text": "世界が君のことを 信じようともせ",
+                "translated_text": "Dù thế giới có tin tưởng bạn thế nào đi chăng nữa"
+            },
+            {
+                "start": 63.0,
+                "end": 69.0,
+                "text": "いざらの 噛むるを 食べてあたしたの",
+                "translated_text": "Tôi đã ăn miếng nhai của Izara và đưa nó cho bạn."
+            },
+            {
+                "start": 69.0,
+                "end": 75.0,
+                "text": "私は君だけの 味方にならぬよ",
+                "translated_text": "Tôi sẽ không phải là đồng minh duy nhất của bạn"
+            },
+            {
+                "start": 75.0,
+                "end": 80.0,
+                "text": "あの言葉で 痛みを わたしは知っている",
+                "translated_text": "Tôi biết nỗi đau với những lời nói đó"
+            },
+            {
+                "start": 80.0,
+                "end": 83.0,
+                "text": "So everything that makes me whole",
+                "translated_text": "Vì vậy, mọi thứ làm cho tôi trọn vẹn"
+            },
+            {
+                "start": 83.0,
+                "end": 90.0,
+                "text": "今君に捧げよう",
+                "translated_text": "Bây giờ tôi sẽ dành nó cho bạn"
+            },
+            {
+                "start": 93.0,
+                "end": 98.0,
+                "text": "さあ 二人なら",
+                "translated_text": "Vâng, nếu chỉ có hai chúng ta"
+            },
+            {
+                "start": 98.0,
+                "end": 103.0,
+                "text": "誰かが君のこと 嘘つきと呼んで",
+                "translated_text": "Có người gọi bạn là kẻ nói dối"
+            },
+            {
+                "start": 103.0,
+                "end": 108.0,
+                "text": "心の良い言葉で 傷つけようとして",
+                "translated_text": "Cố làm tổn thương tôi bằng những lời nói tử tế"
+            },
+            {
+                "start": 108.0,
+                "end": 113.0,
+                "text": "世界が君のこと 嘘つきと呼んで",
+                "translated_text": "Thế giới gọi bạn là kẻ nói dối"
+            },
+            {
+                "start": 113.0,
+                "end": 118.0,
+                "text": "心の良い言葉で 傷つけようとして",
+                "translated_text": "Cố làm tổn thương tôi bằng những lời nói tử tế"
+            }
+        ],
+        "ko": [
+            {
+                "start": 0.0,
+                "end": 3.0,
+                "text": "So everything that makes me whole",
+                "translated_text": "그래서 나를 완전하게 만드는 모든 것"
+            },
+            {
+                "start": 3.0,
+                "end": 9.0,
+                "text": "今君に捧げよう",
+                "translated_text": "지금 너에게 바치자"
+            },
+            {
+                "start": 11.0,
+                "end": 14.0,
+                "text": "I'm your friend",
+                "translated_text": "나는 당신의 친구입니다"
+            },
+            {
+                "start": 14.0,
+                "end": 17.0,
+                "text": "I'm your friend",
+                "translated_text": "나는 당신의 친구입니다"
+            },
+            {
+                "start": 24.0,
+                "end": 29.0,
+                "text": "ねえ この世界には",
+                "translated_text": "이봐, 이 세상에는"
+            },
+            {
+                "start": 29.0,
+                "end": 38.0,
+                "text": "たくさんの 幸せがあるんだね",
+                "translated_text": "많은 행복이 있습니다."
+            },
+            {
+                "start": 38.0,
+                "end": 45.0,
+                "text": "さあ 二人なら",
+                "translated_text": "자 둘이라면"
+            },
+            {
+                "start": 46.0,
+                "end": 52.0,
+                "text": "誰かが君のこと 嘘つきと呼んで",
+                "translated_text": "누군가가 너를 거짓말쟁이라고 부르고"
+            },
+            {
+                "start": 52.0,
+                "end": 57.0,
+                "text": "心の良い言葉で 傷つけようとして",
+                "translated_text": "마음이 좋은 말로 다치게 하려고"
+            },
+            {
+                "start": 57.0,
+                "end": 63.0,
+                "text": "世界が君のことを 信じようともせ",
+                "translated_text": "세상이 너를 믿으려고 해"
+            },
+            {
+                "start": 63.0,
+                "end": 69.0,
+                "text": "いざらの 噛むるを 食べてあたしたの",
+                "translated_text": "막상 씹는 것을 먹었어."
+            },
+            {
+                "start": 69.0,
+                "end": 75.0,
+                "text": "私は君だけの 味方にならぬよ",
+                "translated_text": "나는 너만의 아군이 되지 않아"
+            },
+            {
+                "start": 75.0,
+                "end": 80.0,
+                "text": "あの言葉で 痛みを わたしは知っている",
+                "translated_text": "그 말로 고통을 나는 알고 있다"
+            },
+            {
+                "start": 80.0,
+                "end": 83.0,
+                "text": "So everything that makes me whole",
+                "translated_text": "그래서 나를 완전하게 만드는 모든 것"
+            },
+            {
+                "start": 83.0,
+                "end": 90.0,
+                "text": "今君に捧げよう",
+                "translated_text": "지금 너에게 바치자"
+            },
+            {
+                "start": 93.0,
+                "end": 98.0,
+                "text": "さあ 二人なら",
+                "translated_text": "자 둘이라면"
+            },
+            {
+                "start": 98.0,
+                "end": 103.0,
+                "text": "誰かが君のこと 嘘つきと呼んで",
+                "translated_text": "누군가가 너를 거짓말쟁이라고 부르고"
+            },
+            {
+                "start": 103.0,
+                "end": 108.0,
+                "text": "心の良い言葉で 傷つけようとして",
+                "translated_text": "마음이 좋은 말로 다치게 하려고"
+            },
+            {
+                "start": 108.0,
+                "end": 113.0,
+                "text": "世界が君のこと 嘘つきと呼んで",
+                "translated_text": "세상이 너를 거짓말쟁이라고 부르고"
+            },
+            {
+                "start": 113.0,
+                "end": 118.0,
+                "text": "心の良い言葉で 傷つけようとして",
+                "translated_text": "마음이 좋은 말로 다치게 하려고"
+            }
+        ]
+    },
+    "IsPublic": true,
+    "username": "Thai"
+}
