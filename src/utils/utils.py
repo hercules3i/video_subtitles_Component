@@ -10,7 +10,7 @@ from deep_translator import GoogleTranslator
 import threading
 from post_request2db import post_to_db
 from src.constant import *
-
+import os
 
 def get_throttling_function_name(js: str) -> str:
     """Extract the name of the function that computes the throttling parameter.
@@ -118,7 +118,10 @@ def generate_subtitle_file(yt_id: str, language, segments):
         text += f"{str(index + 1)}\n"
         text += f"{segment_start} --> {segment_end}\n"
         text += f"{segment['text']}\n"
-        text += f"{segment['translated_text']}\n"
+        try:
+            text += f"{segment['translated_text']}\n"
+        except:
+            continue
 
 
 
@@ -138,4 +141,5 @@ def add_subtitle_to_video(yt_id: str, subtitle_file, subtitle_language):
     ffmpeg.run(stream, overwrite_output=True)
     file_path = post_to_db(output_video)
     print("Post to db thanh cong")
+    os.remove(output_video)
     return file_path

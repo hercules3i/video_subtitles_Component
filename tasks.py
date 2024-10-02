@@ -21,7 +21,7 @@ cipher.get_throttling_function_name = get_throttling_function_name
 import urllib.request
 import pytube
 
-def download_video(url, dest):
+def download_video(url):
 
     if "youtube.com" not in url:
         id = url.split('/')[-1].split('.')[0]
@@ -31,6 +31,17 @@ def download_video(url, dest):
         yt = pytube.YouTube(url)
         yt_id = yt.video_id
         yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
+        return {"title": yt.title, "id": yt_id, "status": "completed"}
+def redownload_video(url):
+
+    if "youtube.com" not in url:
+        id = url.split('/')[-1].split('.')[0]
+        urllib.request.urlretrieve(url, f'{VIDEOS_PATH}re-{id}')
+        return {"title": "Non-YouTube Video", "id": f"{id}", "status": "completed"}
+    else:
+        yt = pytube.YouTube(url)
+        yt_id = yt.video_id
+        yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename="re-"+yt_id)
         return {"title": yt.title, "id": yt_id, "status": "completed"}
     
 def extract_audio_task(yt_id):

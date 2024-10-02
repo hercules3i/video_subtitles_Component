@@ -4,19 +4,19 @@ from fastapi import FastAPI
 from src.models.models import Item
 from src.utils.utils import *
 from src.constant import *
-from tasks import download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
+from tasks import redownload_video, download_video, extract_audio_task, transcribe_task, generate_subtitle_file_task, add_subtitle_to_video_task
 import requests
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import re
 from src.constant import VIDEOS_PATH
 from pydantic import BaseModel
+
+# Create necessary directories
 os.makedirs(AUDIOS_PATH, exist_ok=True)
 os.makedirs(VIDEOS_PATH, exist_ok=True)
 os.makedirs(SUBTITLES, exist_ok=True)
 os.makedirs(OUTPUT, exist_ok=True)
-# Create necessary directories
-
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -26,35 +26,31 @@ app.add_middleware(
     allow_headers=["*"],  # Allow all headers
 )
 class SubtitleData(BaseModel):
-    result: str
+    dest : str
+    url: str
     content: list[dict]  # You can further specify the dict structure if neede
-def remove_directory(directory):
-    if os.path.exists(directory) and os.path.isdir(directory):
-        shutil.rmtree(directory)
-        print(f"Thư mục '{directory}' đã được xóa.")
-    else:
-        print(f"Thư mục '{directory}' không tồn tại.")
-
-# Ví dụ sử dụng
 
 @app.post("/send_post/")
 async def send_download(url: str, dest: str):
-
-
-    download_response = download_video(url,dest)
-    yt_id = download_response["id"]
-    audio_extract, yt_id = extract_audio_task(yt_id)
-    language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
-    # Split the data into blocks based on double newlines
-
-
    
-    subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
-    result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
-    print ("message Subtitle task added to the queue")
+    try:
+        download_response = download_video(url)
+        yt_id = download_response["id"]
+        audio_extract, yt_id = extract_audio_task(yt_id)
+        language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
+        # Split the data into blocks based on double newlines        
+            
+        subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
+        result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
+        print ("message Subtitle task added to the queue")
+        os.remove(audio_extract)
+        os.remove(subtitle_file)
 
-    return {"result":result, "content":serializable_segments}
-
+        os.remove(f"{VIDEOS_PATH}{yt_id}")
+        
+        return {"result":result, "content":serializable_segments}
+    except Exception as e:
+            return e
 # @app.post("/download/")
 # async def download_video_via_url(item: Item):
 #     # Đẩy tác vụ tải video vào hàng đợi Celery
@@ -64,13 +60,16 @@ async def send_download(url: str, dest: str):
 
 @app.post("/generate/{yt_id}")
 async def generate_subtitle(yt_id: str, dest: str):
-    audio_extract, yt_id = extract_audio_task(yt_id)
-    language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
-    subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
-    result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
-    
-    print ("message Subtitle task added to the queue")
-    return result
+    try:
+        audio_extract, yt_id = extract_audio_task(yt_id)
+        language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
+        subtitle_file, language, yt_id = generate_subtitle_file_task(language, serializable_segments, yt_id)
+        result = add_subtitle_to_video_task(subtitle_file, dest, yt_id)
+        
+        print ("message Subtitle task added to the queue")
+        return result
+    except Exception as e:
+        return e
 
 
 # Define a Pydantic model for the request body
@@ -79,16 +78,17 @@ async def generate_subtitle(yt_id: str, dest: str):
 @app.post("/regenerate")
 async def generate_subtitle(subtitle_data: SubtitleData):
     # Access the data from the request body
-   
+ 
     try:
-        result = subtitle_data.result
+        dest = subtitle_data.dest
+        url = subtitle_data.url
         content = subtitle_data.content
-        print(f"{result}")
-        match = re.search(r'output-(.*?)(?:_\w{8})?\.mp4$', result)
-        print(f"{match}")
-        if match:
-            file_id = match.group(1)
-            srt_filename = f"{SUBTITLES}sub-{file_id}.srt"
+        print(f"{url}")
+        download_response = redownload_video(url)
+        videoId  = download_response["id"]+'-'+dest
+        if videoId:
+           
+            srt_filename = f"{SUBTITLES}sub-{videoId}.srt"
             # Create the SRT file
             
             with open(srt_filename, 'w', encoding='utf-8') as srt_file:
@@ -98,39 +98,22 @@ async def generate_subtitle(subtitle_data: SubtitleData):
                     srt_file.write(f"{index}\n")
                     srt_file.write(f"{start_time} --> {end_time}\n")
                     srt_file.write(f"{item['text']}\n") 
-                    srt_file.write(f"{item['translated_text']}\n\n") # Change here to use 'text' instead of 'translated_text'
-                first_dash_index = result.index('-') + 1  # +1 to get the position after the first '-'
-
-            last_dash_index = result.rindex('-')  # Get the position of the last '-'
-
-            # Extract videoID (from first '-' to last '-')
-            videoID = result[first_dash_index:last_dash_index]
-
-            # Extract the last part before the last '_'
-            last_part_before_underscore = result.rsplit('_', 1)[0]  # Get everything before the last '_'
-            lang_code_candidate = last_part_before_underscore[-8:]  # Get the last 8 characters
-
-            # Check if the last 8 characters contain any valid language codes
-            valid_langs = {"zh-CN", "zh-TW", "mni-Mtei"}
-            if lang_code_candidate in valid_langs:
-                dest = lang_code_candidate  # If it matches, set dest to this value
-            else:
-                # Extract the 'dest' (last '-' to the next '_')
-                dest_match = re.search(r'-(\w{2,3})_', result)  # Match language codes of at least 2 or 3 characters before '_'
-                if dest_match:
-                    dest = dest_match.group(1)  # Get the dest
-                else:
-                    dest = None  # Default to None if no match
-            print(f"videoID {videoID} dest {dest}")
-        
+                    try:
+                      srt_file.write(f"{item['translated_text']}\n\n") # Change here to use 'text' instead of 'translated_text'
+                    except:
+                        continue
+            
         
             print(f"SRT file '{srt_filename}' created successfully.")
-            url = add_subtitle_to_video_task(srt_filename, dest, videoID)
+            url = add_subtitle_to_video_task(srt_filename, dest, "re-"+download_response["id"])
+            os.remove(srt_filename)
+            os.remove(f"{VIDEOS_PATH}re-{download_response["id"]}")
+
             return url
         else:
             print("dont have video id")
     except Exception as e:
-        return "Error " + e
+        return e
 # Function to format time in SRT format
 def format_time(seconds):
     hours = int(seconds // 3600)
