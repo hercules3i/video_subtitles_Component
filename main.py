@@ -132,10 +132,9 @@ async def get_video_resolutions(url: str):
     except Exception as e:
         return e
 
-@app.get("/task-status/{task_id}")
-async def task_status(task_id: str):
-    # Kiểm tra trạng thái tác vụ
-    task_result = AsyncResult(task_id)
-    return {"status": task_result.status, "result": task_result.result}
+@app.post("/task-status/")
+async def task_status():
+    
+    return {"status": "Hệ thống sẵn sàng"}
 
 
