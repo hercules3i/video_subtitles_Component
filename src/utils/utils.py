@@ -55,8 +55,9 @@ def get_throttling_function_name(js: str) -> str:
 def extract_audio(yt_id: str):
     extracted_audio = f"{AUDIOS_PATH}audio-{yt_id}.wav"
     stream = ffmpeg.input(f"{VIDEOS_PATH}{yt_id}")
+    print(f"{VIDEOS_PATH}{yt_id}")
 
-    stream = ffmpeg.output(stream, extracted_audio)
+    stream = ffmpeg.output(stream, extracted_audio,format='wav')
     try:
         ffmpeg.run(stream, overwrite_output=True)
     except ffmpeg.Error as e:

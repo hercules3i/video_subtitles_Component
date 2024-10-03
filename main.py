@@ -29,6 +29,7 @@ class SubtitleData(BaseModel):
     dest : str
     url: str
     content: list[dict]  # You can further specify the dict structure if neede
+    res: int
 
 @app.post("/send_post/")
 async def send_download(url: str, dest: str, res: int):
@@ -83,8 +84,9 @@ async def generate_subtitle(subtitle_data: SubtitleData):
         dest = subtitle_data.dest
         url = subtitle_data.url
         content = subtitle_data.content
+        res = subtitle_data.res
         print(f"{url}")
-        download_response = redownload_video(url)
+        download_response = redownload_video(url,res)
         videoId  = download_response["id"]+'-'+dest
         if videoId:
            

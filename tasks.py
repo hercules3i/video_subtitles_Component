@@ -21,19 +21,6 @@ cipher.get_throttling_function_name = get_throttling_function_name
 import urllib.request
 import pytube
 
-def download_video_stream(file, selected_resolution, yt_id):
-    # Tìm luồng video có độ phân giải chính xác với độ phân giải đã chọn
-    stream = next(
-        (s for s in filter(lambda s: s.type == 'video', file.fmt_streams) 
-         if get_resolution(s) == selected_resolution), 
-        None
-    )
-    
-    if stream:
-        stream.download(output_path=VIDEOS_PATH, filename=yt_id)
-        print(f"Đã tải xuống luồng video với độ phân giải {selected_resolution}p.")
-    else:
-        print(f"Không tìm thấy luồng video với độ phân giải {selected_resolution}p.")
 
 def download_video(url, res):
 
@@ -63,7 +50,7 @@ def download_video(url, res):
         return {"title": yt.title, "id": yt_id, "status": "completed"}
     
 
-def redownload_video(url):
+def redownload_video(url,res):
 
     if "youtube.com" not in url:
         id = url.split('/')[-1].split('.')[0]
@@ -72,7 +59,17 @@ def redownload_video(url):
     else:
         yt = pytube.YouTube(url)
         yt_id = yt.video_id
-        yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename="re-"+yt_id)
+        stream = next(
+        (s for s in filter(lambda s: s.type == 'video', yt.fmt_streams) 
+         if get_resolution(s) == res), 
+        None
+        )
+        
+        if stream:
+            stream.download(output_path=VIDEOS_PATH, filename="re-"+yt_id)
+            print(f"Đã tải xuống luồng video với độ phân giải {res}p.")
+        else:
+            print(f"Không tìm thấy luồng video với độ phân giải {res}p.")
         return {"title": yt.title, "id": yt_id, "status": "completed"}
     
 def convert_seconds(seconds):
