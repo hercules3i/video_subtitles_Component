@@ -50,8 +50,7 @@ async def send_download(url: str, dest: str, res: int):
         os.remove(f"{VIDEOS_PATH}{yt_id}")
         
         return {"result":result, "content":serializable_segments}
-    # except Exception as e:
-    #         return e
+
 # @app.post("/download/")
 # async def download_video_via_url(item: Item):
 #     # Đẩy tác vụ tải video vào hàng đợi Celery
