@@ -34,7 +34,7 @@ class SubtitleData(BaseModel):
 @app.post("/send_post/")
 async def send_download(url: str, dest: str, res: int):
    
-    try:
+    # try:
         download_response = download_video(url,res)
         yt_id = download_response["id"]
         audio_extract, yt_id = extract_audio_task(yt_id)
@@ -50,8 +50,8 @@ async def send_download(url: str, dest: str, res: int):
         os.remove(f"{VIDEOS_PATH}{yt_id}")
         
         return {"result":result, "content":serializable_segments}
-    except Exception as e:
-            return e
+    # except Exception as e:
+    #         return e
 # @app.post("/download/")
 # async def download_video_via_url(item: Item):
 #     # Đẩy tác vụ tải video vào hàng đợi Celery
