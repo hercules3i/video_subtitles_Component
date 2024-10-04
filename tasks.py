@@ -65,7 +65,7 @@ def redownload_video(url,res):
         video_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_video=True, resolution=f'{res}p').first()        
         audio_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_audio=True).first()
         
-        video_path = video_stream.download(filename=f'video.mp4')
+        video_path = video_stream.download(filename=f'{yt_id}.mp4')
         audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
         if video_stream:
             print(f"Selected video resolution: {video_stream.resolution}")

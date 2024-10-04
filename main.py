@@ -1,6 +1,6 @@
 import os
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from src.models.models import Item
 from src.utils.utils import *
 from src.constant import *
@@ -11,7 +11,7 @@ import shutil
 import re
 from src.constant import VIDEOS_PATH
 from pydantic import BaseModel
-
+import asyncio
 # Create necessary directories
 os.makedirs(AUDIOS_PATH, exist_ok=True)
 os.makedirs(VIDEOS_PATH, exist_ok=True)
@@ -33,11 +33,12 @@ class SubtitleData(BaseModel):
 
 @app.post("/send_post/")
 async def send_download(url: str, dest: str, res: int):
-   
+        asyncio.sleep(7)
     # try:
         download_response = download_video(url,res)
         yt_id = download_response["id"]
-        audio_extract, yt_id = extract_audio_task(yt_id)
+        audio_extract = download_response["audio"]
+        # audio_extract, yt_id = extract_audio_task(yt_id)
         language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
         # Split the data into blocks based on double newlines        
             
@@ -78,6 +79,7 @@ async def generate_subtitle(yt_id: str, dest: str):
 @app.post("/regenerate")
 async def generate_subtitle(subtitle_data: SubtitleData):
     # Access the data from the request body
+    asyncio.sleep(7)
  
     try:
         dest = subtitle_data.dest
@@ -126,11 +128,10 @@ def format_time(seconds):
 @app.post("/get_video_resolutions/")
 async def get_video_resolutions(url: str):
     try:
-        list_resolutions,time_length = handle_get_resolution(url)
-        return {"list_resolutions": list_resolutions,"time_length":time_length}
+        list_resolutions, time_length = handle_get_resolution(url)
+        return {"list_resolutions": list_resolutions, "time_length": time_length}
     except Exception as e:
-        return e
-
+        raise HTTPException(status_code=500, detail=str(e))
 @app.post("/task-status/")
 async def task_status():
     
