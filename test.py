@@ -53,8 +53,8 @@ import yt_dlp
 
 def download_video(url):
     ydl_opts = {
-        # 'format': 'bestvideo[height>=360]+bestaudio/best[height>=360]',  # lowest video above or equal to 360p
-        'format': 'bestvideo[height<=1440]+bestaudio/best[height<=1440]',  # best video/audio up to 1440p
+        'format': 'bestvideo[height=360]+bestaudio/best[height=360]',  # lowest video above or equal to 360p
+        # 'format': 'bestvideo[height<=1440]+bestaudio/best[height<=1440]',  # best video/audio up to 1440p
         # 'format': 'bestvideo+bestaudio/best',  # best video and audio available
         'outtmpl': 'downloaded_video.mp4',  # output file template
         'noplaylist': True,  # download only the single video, not the playlist

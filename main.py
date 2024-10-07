@@ -37,8 +37,7 @@ async def send_download(url: str, dest: str, res: str):
     # try:
         download_response = download_video(url,res)
         yt_id = download_response["id"]
-        audio_extract = download_response["audio"]
-        # audio_extract, yt_id = extract_audio_task(yt_id)
+        audio_extract, yt_id = extract_audio_task(yt_id)
         language, serializable_segments, yt_id = transcribe_task(audio_extract, yt_id,dest)
         # Split the data into blocks based on double newlines        
             

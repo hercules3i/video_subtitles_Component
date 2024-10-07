@@ -40,9 +40,10 @@ def download_video(url, res):
         # yt = YouTube(url)
         # yt_id = yt.video_id
         quality = ""
-        if res is "lowest":
+        if res == "lowest":
             print("lowest")
-            quality = 'bestvideo[height>=360]+bestaudio/best[height>=360]'
+            quality = 'bestvideo[height=360]+bestaudio/best[height=360]'
+
         else :
             print("highest")
             quality =  'bestvideo[height<=1440]+bestaudio/best[height<=1440]'
@@ -97,9 +98,10 @@ def redownload_video(url, res):
     else: 
 
         quality = ""
-        if res is "lowest":
+        if res == "lowest":
           
-            quality = 'bestvideo[height>=360]+bestaudio/best[height>=360]'
+            quality = 'bestvideo[height=360]+bestaudio/best[height=360]'
+
         else :
             
             quality =  'bestvideo[height<=1440]+bestaudio/best[height<=1440]'
