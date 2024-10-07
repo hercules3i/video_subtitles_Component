@@ -9,6 +9,7 @@ import requests
 import urllib.request
 from pytube import YouTube
 import os
+import yt_dlp
 # config
 _default_clients["ANDROID"]["context"]["client"]["clientVersion"] = "19.08.35"
 _default_clients["IOS"]["context"]["client"]["clientVersion"] = "19.08.35"
@@ -21,63 +22,127 @@ cipher.get_throttling_function_name = get_throttling_function_name
 
 import urllib.request
 import pytube
-
+import re
+def get_youtube_id(url):
+    # Regular expression to match the YouTube video ID
+    match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", url)
+    if match:
+        return match.group(1)
+    else:
+        return None
 
 def download_video(url, res):
-
     if "youtube.com" not in url:
         id = url.split('/')[-1].split('.')[0]
         urllib.request.urlretrieve(url, f'{VIDEOS_PATH}{id}')
         return {"title": "Non-YouTube Video", "id": f"{id}", "status": "completed"}
-    else:
+    else: 
+        # yt = YouTube(url)
+        # yt_id = yt.video_id
+        quality = ""
+        if res is "lowest":
+            print("lowest")
+            quality = 'bestvideo[height>=360]+bestaudio/best[height>=360]'
+        else :
+            print("highest")
+            quality =  'bestvideo[height<=1440]+bestaudio/best[height<=1440]'
+        ydl_opts = {
+            'format': quality,  
+            'outtmpl': f'{VIDEOS_PATH}{get_youtube_id(url)}',  # output file template
+            'noplaylist': True,  # download only the single video, not the playlist
+            'merge_output_format': 'mp4',  # specify the output format to avoid separate files
+        }
+        
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(url, download=True)
+                print(f"Downloaded: {info_dict['title']}")
+        except Exception as e:
+            print(f"Error downloading video: {e}")
+        return {"title":"no title", "id": get_youtube_id(url), "status": "completed"}
+# def download_video(url, res):
 
-        print(url)
+#     if "youtube.com" not in url:
+#         id = url.split('/')[-1].split('.')[0]
+#         urllib.request.urlretrieve(url, f'{VIDEOS_PATH}{id}')
+#         return {"title": "Non-YouTube Video", "id": f"{id}", "status": "completed"}
+#     else:
+
+#         print(url)
         
-        yt = YouTube(url)
-        yt_id = yt.video_id
-        video_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_video=True, resolution=f'{res}p').first()        
-        audio_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_audio=True).first()
+#         yt = YouTube(url)
+#         yt_id = yt.video_id
+#         video_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_video=True, resolution=f'{res}p').first()        
+#         audio_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_audio=True).first()
         
-        video_path = video_stream.download(filename=f'{yt_id}.mp4')
-        audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
-        if video_stream:
-            print(f"Selected video resolution: {video_stream.resolution}")
-        # Merge using FFmpeg (ensure ffmpeg is installed and in the system path)
-        output_path = f'{VIDEOS_PATH}{yt_id}.mp4'
-        print(output_path)
-        os.system(f'ffmpeg -i {video_path} -i {audio_path} -c:v copy -c:a aac {output_path}')
-        os.rename(output_path, f'{VIDEOS_PATH}{yt_id}')
-        print(f"Video and audio merged into {output_path}.")
+#         video_path = video_stream.download(filename=f'{yt_id}.mp4')
+#         audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
+#         if video_stream:
+#             print(f"Selected video resolution: {video_stream.resolution}")
+#         # Merge using FFmpeg (ensure ffmpeg is installed and in the system path)
+#         output_path = f'{VIDEOS_PATH}{yt_id}.mp4'
+#         print(output_path)
+#         os.system(f'ffmpeg -i {video_path} -i {audio_path} -c:v copy -c:a aac {output_path}')
+#         os.rename(output_path, f'{VIDEOS_PATH}{yt_id}')
+#         print(f"Video and audio merged into {output_path}.")
        
-        # yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
-        return {"title": yt.title, "id": yt_id, "status": "completed","audio":audio_path}
+#         # yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
+#         return {"title": yt.title, "id": yt_id, "status": "completed","audio":audio_path}
     
-
-def redownload_video(url,res):
-
+def redownload_video(url, res):
     if "youtube.com" not in url:
         id = url.split('/')[-1].split('.')[0]
         urllib.request.urlretrieve(url, f'{VIDEOS_PATH}re-{id}')
         return {"title": "Non-YouTube Video", "id": f"{id}", "status": "completed"}
-    else:
-        yt = YouTube(url)
-        yt_id = yt.video_id
-        video_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_video=True, resolution=f'{res}p').first()        
-        audio_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_audio=True).first()
+    else: 
+
+        quality = ""
+        if res is "lowest":
+          
+            quality = 'bestvideo[height>=360]+bestaudio/best[height>=360]'
+        else :
+            
+            quality =  'bestvideo[height<=1440]+bestaudio/best[height<=1440]'
+        print(quality)
+        ydl_opts = {
+            'format': quality,  # best video/audio up to 1440p
+            'outtmpl': f'{VIDEOS_PATH}re-{get_youtube_id(url)}',  # output file template
+            'noplaylist': True,  # download only the single video, not the playlist
+            'merge_output_format': 'mp4',  # specify the output format to avoid separate files
+        }
         
-        video_path = video_stream.download(filename=f'video.mp4')
-        audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
-        if video_stream:
-            print(f"Selected video resolution: {video_stream.resolution}")
-        # Merge using FFmpeg (ensure ffmpeg is installed and in the system path)
-        output_path = f'{VIDEOS_PATH}re-{yt_id}.mp4'
-        print(output_path)
-        os.system(f'ffmpeg -i {video_path} -i {audio_path} -c:v copy -c:a aac {output_path}')
-        os.rename(output_path, f'{VIDEOS_PATH}re-{yt_id}')
-        print(f"Video and audio merged into {output_path}.")
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(url, download=True)
+                print(f"Downloaded: {info_dict['title']}")
+        except Exception as e:
+            print(f"Error downloading video: {e}")
+        return {"title":"no title", "id": get_youtube_id(url), "status": "completed"}
+# def redownload_video(url,res):
+
+#     if "youtube.com" not in url:
+#         id = url.split('/')[-1].split('.')[0]
+#         urllib.request.urlretrieve(url, f'{VIDEOS_PATH}re-{id}')
+#         return {"title": "Non-YouTube Video", "id": f"{id}", "status": "completed"}
+#     else:
+#         yt = YouTube(url)
+#         yt_id = yt.video_id
+#         video_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_video=True, resolution=f'{res}p').first()        
+#         audio_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_audio=True).first()
+        
+#         video_path = video_stream.download(filename=f'video.mp4')
+#         audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
+#         if video_stream:
+#             print(f"Selected video resolution: {video_stream.resolution}")
+#         # Merge using FFmpeg (ensure ffmpeg is installed and in the system path)
+#         output_path = f'{VIDEOS_PATH}re-{yt_id}.mp4'
+#         print(output_path)
+#         os.system(f'ffmpeg -i {video_path} -i {audio_path} -c:v copy -c:a aac {output_path}')
+#         os.rename(output_path, f'{VIDEOS_PATH}re-{yt_id}')
+#         print(f"Video and audio merged into {output_path}.")
        
-        # yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
-        return {"title": yt.title, "id": yt_id, "status": "completed","audio":audio_path}
+#         # yt.streams.filter(progressive=True, file_extension='mp4').get_highest_resolution().download(output_path=VIDEOS_PATH, filename=yt_id)
+#         return {"title": yt.title, "id": yt_id, "status": "completed","audio":audio_path}
     
     
 def convert_seconds(seconds):

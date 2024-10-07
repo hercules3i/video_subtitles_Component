@@ -54,7 +54,7 @@ def get_throttling_function_name(js: str) -> str:
 
 def extract_audio(yt_id: str):
     extracted_audio = f"{AUDIOS_PATH}audio-{yt_id}.wav"
-    stream = ffmpeg.input(f"{VIDEOS_PATH}{yt_id}")
+    stream = ffmpeg.input(f"{VIDEOS_PATH}{yt_id}.mp4")
     print(f"{VIDEOS_PATH}{yt_id}")
 
     stream = ffmpeg.output(stream, extracted_audio,format='wav')
@@ -133,7 +133,7 @@ def generate_subtitle_file(yt_id: str, language, segments):
 
 
 def add_subtitle_to_video(yt_id: str, subtitle_file, subtitle_language):
-    video_input_stream = ffmpeg.input(f"{VIDEOS_PATH}{yt_id}")
+    video_input_stream = ffmpeg.input(f"{VIDEOS_PATH}{yt_id}.mp4")
     # subtitle_input_stream = ffmpeg.input(subtitle_file)
     output_video = f"{OUTPUT}output-{yt_id}-{subtitle_language}.mp4"
     # subtitle_track_tile = subtitle_file.replace(".srt", "")

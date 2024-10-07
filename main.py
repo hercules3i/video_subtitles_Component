@@ -29,10 +29,10 @@ class SubtitleData(BaseModel):
     dest : str
     url: str
     content: list[dict]  # You can further specify the dict structure if neede
-    res: int
+    res: str
 
 @app.post("/send_post/")
-async def send_download(url: str, dest: str, res: int):
+async def send_download(url: str, dest: str, res: str):
    
     # try:
         download_response = download_video(url,res)
@@ -47,7 +47,7 @@ async def send_download(url: str, dest: str, res: int):
         os.remove(audio_extract)
         os.remove(subtitle_file)
 
-        os.remove(f"{VIDEOS_PATH}{yt_id}")
+        os.remove(f"{VIDEOS_PATH}{yt_id}.mp4")
         
         return {"result":result, "content":serializable_segments}
 
@@ -108,7 +108,7 @@ async def generate_subtitle(subtitle_data: SubtitleData):
             print(f"SRT file '{srt_filename}' created successfully.")
             url = add_subtitle_to_video_task(srt_filename, dest, "re-"+download_response["id"])
             os.remove(srt_filename)
-            os.remove(f"{VIDEOS_PATH}re-{download_response['id']}")
+            os.remove(f"{VIDEOS_PATH}re-{download_response['id']}.mp4")
 
             return url
         else:
