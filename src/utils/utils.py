@@ -167,7 +167,12 @@ def remove_duplicates(res_list):
     unique_res = []
     for res in res_list:
         if res not in seen:
-            unique_res.append(int(res))
-            seen.add(res)
+            try:
+                # Cố gắng chuyển đổi res thành số nguyên
+                res_int = int(res)
+                unique_res.append(res_int)
+                seen.add(res_int)  # Thêm vào set để đánh dấu đã gặp phần tử này
+            except ValueError as e:
+                print(f"Error: '{res}' không thể chuyển đổi thành số nguyên.")
+    return set(unique_res)
 
-    return unique_res

@@ -130,6 +130,16 @@ def redownload_video(url, res):
 #         video_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_video=True, resolution=f'{res}p').first()        
 #         audio_stream = yt.streams.filter(adaptive=True, file_extension='mp4', only_audio=True).first()
         
+        video_path = video_stream.download(filename=f'{yt_id}.mp4')
+        audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
+        if video_stream:
+            print(f"Selected video resolution: {video_stream.resolution}")
+        # Merge using FFmpeg (ensure ffmpeg is installed and in the system path)
+        output_path = f'{VIDEOS_PATH}re-{yt_id}.mp4'
+        print(output_path)
+        os.system(f'ffmpeg -i {video_path} -i {audio_path} -c:v copy -c:a aac {output_path}')
+        os.rename(output_path, f'{VIDEOS_PATH}re-{yt_id}')
+        print(f"Video and audio merged into {output_path}.")
 #         video_path = video_stream.download(filename=f'video.mp4')
 #         audio_path = audio_stream.download(filename=f"{AUDIOS_PATH}audio-{yt_id}.wav")
 #         if video_stream:
